@@ -40,15 +40,18 @@ function InputForm() {
       }),
     });
     const result = await data.json();
-    console.log('result', result.repos.data.items[0]);
-    let { description, html_url, name, stargazers_count } =
-      result.repos.data.items[0];
+
+    // generate a random number between 0 and 100
+    const randomIndex = Math.floor(Math.random() * 99);
+    let { description, html_url, name, stargazers_count, topics } =
+      result[randomIndex];
 
     let tempObject: RepositoryCardProps | null = {
       repoURL: html_url,
       name: name,
       description: description,
       stars: stargazers_count,
+      topics: topics,
     };
     setRepositoryData({ ...tempObject });
   }
@@ -66,6 +69,7 @@ function InputForm() {
 
   // Runs when input form is submitted
   function handleFormSubmit(value: InputFormValues) {
+    setRepositoryData(null);
     mutation.mutate(value);
   }
   // console.log('mutation.data', mutation.data);
@@ -73,52 +77,62 @@ function InputForm() {
 
   return (
     <div>
-      <Card shadow='sm' padding='lg' radius='md' withBorder>
-        <form onSubmit={form.onSubmit(handleFormSubmit)}>
-          <Select
-            required
-            label='Programming Language'
-            placeholder='Pick value'
-            data={['JavScript', 'TypeScript', 'Python']}
-            clearable
-            searchable
-            key={form.key('programmingLanguage')}
-            {...form.getInputProps('programmingLanguage')}
-          />
-          <br />
+      <Group mt='md' justify='center'>
+        <Card
+          shadow='sm'
+          padding='lg'
+          radius='md'
+          withBorder
+          style={{ width: 500 }}
+        >
+          <form onSubmit={form.onSubmit(handleFormSubmit)}>
+            <Select
+              required
+              label='Programming Language'
+              placeholder='Pick value'
+              data={['JavaScript', 'TypeScript', 'Python']}
+              clearable
+              searchable
+              key={form.key('programmingLanguage')}
+              {...form.getInputProps('programmingLanguage')}
+            />
+            <br />
 
-          <Select
-            label='Topics'
-            required
-            placeholder='Pick value'
-            searchable
-            data={['React', 'Angular', 'Vue', 'Next.js', 'Svelte', 'Gatsby']}
-            clearable
-            key={form.key('topics')}
-            {...form.getInputProps('topics')}
-          />
-          <br />
-          <Select
-            label='Stars'
-            required
-            searchable
-            placeholder='Pick value'
-            key={form.key('stars')}
-            clearable
-            data={[
-              '0-500 stars',
-              '500-1000 stars',
-              '1000-5000 stars',
-              'More than 5000 stars',
-            ]}
-            {...form.getInputProps('stars')}
-          />
+            <Select
+              label='Topics'
+              required
+              placeholder='Pick value'
+              searchable
+              data={['React', 'Angular', 'Vue', 'Next.js', 'Svelte', 'Gatsby']}
+              clearable
+              key={form.key('topics')}
+              {...form.getInputProps('topics')}
+            />
+            <br />
+            <Select
+              label='Stars'
+              required
+              searchable
+              placeholder='Pick value'
+              key={form.key('stars')}
+              clearable
+              data={[
+                '0-500 stars',
+                '500-1000 stars',
+                '1000-5000 stars',
+                'More than 5000 stars',
+              ]}
+              {...form.getInputProps('stars')}
+            />
 
-          <Group mt='md' justify='center'>
-            <Button type='submit'>Submit</Button>
-          </Group>
-        </form>
-      </Card>
+            <Group mt='md' justify='center'>
+              <Button type='submit' disabled={mutation.isPending}>
+                {mutation.isPending ? 'Searching...' : 'Submit'}
+              </Button>
+            </Group>
+          </form>
+        </Card>
+      </Group>
       {mutation.isPending && (
         <Group mt='md' justify='center'>
           <Loader size={50} />

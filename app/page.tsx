@@ -1,9 +1,12 @@
+import { Group } from '@mantine/core';
 import InputForm from './components/InputForm';
 
 export default function HomePage() {
   return (
     <div>
-      <h1>Random Git repo Finder</h1>
+      <Group mt='md' justify='center'>
+        <h1>Random Git repo Finder</h1>
+      </Group>
       <InputForm />
     </div>
   );
