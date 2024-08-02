@@ -18,7 +18,7 @@ function RepositoryCard({
 }: RepositoryCardProps) {
   return (
     <div>
-      <Group mt='md' justify='center'>
+      <Group mt='md' mb={15} justify='center'>
         <Card
           shadow='sm'
           padding='xl'
@@ -29,8 +29,6 @@ function RepositoryCard({
           <Anchor href={repoURL} target='_blank'>
             {name}
           </Anchor>
-
-          <br />
           <Text mt='xs' c='dimmed' size='sm'>
             <strong>Description:</strong>
             {description}

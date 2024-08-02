@@ -1,5 +1,6 @@
 import { Octokit } from '@octokit/rest';
 
+// TODO: Make sure to move the PAT into .env file
 const octokit = new Octokit({
   auth: `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`,
 });
