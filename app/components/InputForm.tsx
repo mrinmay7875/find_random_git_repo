@@ -4,12 +4,16 @@ import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
+import { PROGRAMMING_LANGUAGES_LIST } from '../data/programmingLanguagesList';
+import { TOPICS_LIST } from '../data/topicsList';
 
 type InputFormValues = {
   programmingLanguage: string;
   topics: string;
   stars: string;
 };
+
+// TODO: Need to add filter by Stars as well
 
 function InputForm() {
   const [repositoryData, setRepositoryData] =
@@ -90,7 +94,7 @@ function InputForm() {
               required
               label='Programming Language'
               placeholder='Pick value'
-              data={['JavaScript', 'TypeScript', 'Python']}
+              data={PROGRAMMING_LANGUAGES_LIST}
               clearable
               searchable
               key={form.key('programmingLanguage')}
@@ -103,7 +107,7 @@ function InputForm() {
               required
               placeholder='Pick value'
               searchable
-              data={['React', 'Angular', 'Vue', 'Next.js', 'Svelte', 'Gatsby']}
+              data={TOPICS_LIST}
               clearable
               key={form.key('topics')}
               {...form.getInputProps('topics')}
