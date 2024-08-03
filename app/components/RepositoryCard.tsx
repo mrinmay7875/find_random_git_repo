@@ -22,20 +22,20 @@ function RepositoryCard({
         <Card
           shadow='sm'
           padding='xl'
-          component='a'
+          component='div'
           style={{ width: 500 }}
           withBorder
         >
           <Anchor href={repoURL} target='_blank'>
             {name}
           </Anchor>
-          <Text mt='xs' c='dimmed' size='sm'>
+          <Text mt='xs' c='dimmed' size='sm' component='div'>
             <strong>Description:</strong>
             {description}
           </Text>
-          <Text mt='xs' size='sm'>
+          <Text mt='xs' size='sm' component='div'>
             <strong>⭐️ Stars:</strong>
-            <Text c='dimmed' size='lg'>
+            <Text c='dimmed' size='lg' component='div'>
               {stars}
             </Text>
           </Text>
