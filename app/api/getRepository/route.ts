@@ -1,4 +1,5 @@
 import { Octokit } from '@octokit/rest';
+import { NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API } from '../../../src/const/const';
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
@@ -12,9 +13,10 @@ export async function POST(request: Request) {
   const requestData: RequestData = await request.json();
   const repos = await octokit.rest.search.repos({
     q: `${requestData.programmingLanguage}+topic:${requestData.topics}`,
-    per_page: 100,
+    per_page: NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API,
     page: 1,
   });
+  console.log('repos', repos);
   // TODO: Add error handling here.
   return Response.json(repos.data.items);
 }

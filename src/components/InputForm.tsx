@@ -6,6 +6,7 @@ import { useState } from 'react';
 import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
 import { PROGRAMMING_LANGUAGES_LIST } from '../data/programmingLanguagesList';
 import { TOPICS_LIST } from '../data/topicsList';
+import { NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API } from '../const/const';
 
 type InputFormValues = {
   programmingLanguage: string;
@@ -47,7 +48,9 @@ function InputForm() {
     const result = await data.json();
 
     // generate a random number between 0 and 100
-    const randomIndex = Math.floor(Math.random() * 99);
+    const randomIndex = Math.floor(
+      Math.random() * NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API
+    );
     let { description, html_url, name, stargazers_count, topics } =
       result[randomIndex];
 
