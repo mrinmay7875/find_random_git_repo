@@ -1,5 +1,7 @@
 import { Anchor, Badge, Card, Group, Image, Text } from '@mantine/core';
 import React from 'react';
+import { Alert } from '@mantine/core';
+import { IconInfoCircle } from '@tabler/icons-react';
 
 export type RepositoryCardProps = {
   repoURL: string;
@@ -7,6 +9,7 @@ export type RepositoryCardProps = {
   description: string;
   stars: number;
   topics: string[];
+  isError: boolean;
 };
 
 function RepositoryCard({
@@ -15,7 +18,28 @@ function RepositoryCard({
   description,
   stars,
   topics,
+  isError,
 }: RepositoryCardProps) {
+  const icon = <IconInfoCircle />;
+
+  if (isError) {
+    return (
+      <div>
+        <Group mt='md' mb={15} justify='center'>
+          <Alert
+            variant='outline'
+            color='red'
+            withCloseButton
+            title='Error'
+            icon={icon}
+          >
+            Something went wrong. Please try again after sometime.
+          </Alert>
+        </Group>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Group mt='md' mb={15} justify='center'>
