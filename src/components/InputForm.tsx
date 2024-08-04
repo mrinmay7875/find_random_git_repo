@@ -61,6 +61,7 @@ function InputForm() {
       description: description,
       stars: stargazers_count,
       topics: topics,
+      isError: false,
     };
     setRepositoryData({ ...tempObject });
   }
@@ -72,7 +73,16 @@ function InputForm() {
       console.log('Success:', data);
     },
     onError: (error: any) => {
-      console.log('error', error);
+      console.log('error', { error });
+      let tempObject: RepositoryCardProps | null = {
+        repoURL: 'html_url',
+        name: 'name',
+        description: 'description',
+        stars: 0,
+        topics: ['topics'],
+        isError: true,
+      };
+      setRepositoryData({ ...tempObject });
     },
   });
 
