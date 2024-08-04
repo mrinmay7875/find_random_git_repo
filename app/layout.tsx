@@ -2,7 +2,7 @@ import '@mantine/core/styles.css';
 import React from 'react';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 import { theme } from '../theme';
-import ReactQueryProvider from './utils/provider/ReactQueryProvider';
+import ReactQueryProvider from '../src/utils/provider/ReactQueryProvider';
 
 export const metadata = {
   title: 'Random Github repo finder',
