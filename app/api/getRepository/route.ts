@@ -1,5 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import { NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API } from '../../../src/const/const';
+import { NextResponse } from 'next/server';
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
@@ -20,7 +21,10 @@ export async function POST(request: Request) {
       page: 1,
     });
     console.log('repos', repos);
-    return Response.json(repos.data.items);
+    // if (repos.data.items.length === 0) {
+    //   return NextResponse.json({ error: 'No repos found' }, { status: 500 });
+    // }
+    return NextResponse.json(repos.data.items);
   } catch (error) {
     console.error('An error occurred:', error);
     return new Response(repos, { status: 500 });
