@@ -9,7 +9,8 @@ export type RepositoryCardProps = {
   description: string;
   stars: number;
   topics: string[];
-  isError: boolean;
+  isRateLimitingError: boolean;
+  isNoReposFoundError: boolean;
 };
 
 function RepositoryCard({
@@ -18,19 +19,36 @@ function RepositoryCard({
   description,
   stars,
   topics,
-  isError,
+  isRateLimitingError,
+  isNoReposFoundError,
 }: RepositoryCardProps) {
   const icon = <IconInfoCircle />;
 
-  const [isAlertOpen, setIsAlertOpen] = useState(isError);
+  const [isAlertOpen, setIsAlertOpen] = useState(isRateLimitingError);
 
   // Hides the Error Alert component
   function handleCloseAlert() {
-    console.log('alert closed');
     setIsAlertOpen(false);
   }
 
-  if (isError && isAlertOpen) {
+  if (isNoReposFoundError) {
+    return (
+      <Group mt='md' mb={15} justify='center'>
+        <Alert
+          variant='outline'
+          color='red'
+          withCloseButton
+          title='Error'
+          icon={icon}
+          onClose={handleCloseAlert}
+        >
+          No repositories found. Please try some another combination.
+        </Alert>
+      </Group>
+    );
+  }
+
+  if (isRateLimitingError && isAlertOpen) {
     return (
       <Group mt='md' mb={15} justify='center'>
         <Alert
@@ -48,7 +66,7 @@ function RepositoryCard({
     );
   }
 
-  if (!isError && !isAlertOpen) {
+  if (!isRateLimitingError && !isAlertOpen) {
     return (
       <div>
         <Group mt='md' mb={15} justify='center'>

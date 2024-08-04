@@ -3,10 +3,10 @@ import { Button, Card, Group, Loader, Select } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
+import { NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API } from '../const/const';
 import { PROGRAMMING_LANGUAGES_LIST } from '../data/programmingLanguagesList';
 import { TOPICS_LIST } from '../data/topicsList';
-import { NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API } from '../const/const';
+import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
 
 type InputFormValues = {
   programmingLanguage: string;
@@ -14,8 +14,8 @@ type InputFormValues = {
   stars: string;
 };
 
-// TODO: Need to add filter by Stars as well
-// TODO: Move the components outside of app folder. Create a src folder outside of app and move the components there.
+// TODO: Need to handle the No repos found case UI.
+// FIXME: Remove the tempObject name and give a better name for that variable.
 
 function InputForm() {
   const [repositoryData, setRepositoryData] =
@@ -52,18 +52,32 @@ function InputForm() {
     const randomIndex = Math.floor(
       Math.random() * NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API
     );
-    let { description, html_url, name, stargazers_count, topics } =
-      result[randomIndex];
+    if (result.length === 0) {
+      let tempObject: RepositoryCardProps | null = {
+        repoURL: 'html_url',
+        name: 'name',
+        description: 'description',
+        stars: 0,
+        topics: ['topics'],
+        isRateLimitingError: false,
+        isNoReposFoundError: true,
+      };
+      setRepositoryData({ ...tempObject });
+    } else {
+      let { description, html_url, name, stargazers_count, topics } =
+        result[randomIndex];
 
-    let tempObject: RepositoryCardProps | null = {
-      repoURL: html_url,
-      name: name,
-      description: description,
-      stars: stargazers_count,
-      topics: topics,
-      isError: false,
-    };
-    setRepositoryData({ ...tempObject });
+      let tempObject: RepositoryCardProps | null = {
+        repoURL: html_url,
+        name: name,
+        description: description,
+        stars: stargazers_count,
+        topics: topics,
+        isRateLimitingError: false,
+        isNoReposFoundError: false,
+      };
+      setRepositoryData({ ...tempObject });
+    }
   }
 
   // We will use this mutation when input form is submitted
@@ -72,15 +86,16 @@ function InputForm() {
     onSuccess: (data: any) => {
       console.log('Success:', data);
     },
-    onError: (error: any) => {
-      console.log('error', { error });
+    onError: (error, variables, context) => {
+      console.log('error', { error, variables, context });
       let tempObject: RepositoryCardProps | null = {
         repoURL: 'html_url',
         name: 'name',
         description: 'description',
         stars: 0,
         topics: ['topics'],
-        isError: true,
+        isRateLimitingError: true,
+        isNoReposFoundError: false,
       };
       setRepositoryData({ ...tempObject });
     },
