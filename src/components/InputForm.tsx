@@ -43,6 +43,7 @@ function InputForm() {
       body: JSON.stringify({
         programmingLanguage: value.programmingLanguage,
         topics: value.topics,
+        minStars: parseInt(value.stars),
       }),
     });
     const result = await data.json();
@@ -125,10 +126,18 @@ function InputForm() {
               key={form.key('stars')}
               clearable
               data={[
-                '0-500 stars',
-                '500-1000 stars',
-                '1000-5000 stars',
-                'More than 5000 stars',
+                { value: '100', label: 'Min 100 stars' },
+                {
+                  value: '500',
+                  label: 'Min 500 stars',
+                },
+                { value: '1000', label: 'Min 1000 stars' },
+                { value: '2000', label: 'Min 2000 stars' },
+                { value: '5000', label: 'Min 5000 stars' },
+                { value: '10000', label: 'Min 10000 stars' },
+                { value: '20000', label: 'Min 20000 stars' },
+                { value: '30000', label: 'Min 30000 stars' },
+                { value: '50000', label: 'Min 50000 stars' },
               ]}
               {...form.getInputProps('stars')}
             />

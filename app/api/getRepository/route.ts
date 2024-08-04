@@ -8,11 +8,12 @@ const octokit = new Octokit({
 type RequestData = {
   programmingLanguage: string;
   topics: string;
+  minStars: number;
 };
 export async function POST(request: Request) {
   const requestData: RequestData = await request.json();
   const repos = await octokit.rest.search.repos({
-    q: `${requestData.programmingLanguage}+topic:${requestData.topics}`,
+    q: `${requestData.programmingLanguage}+topic:${requestData.topics}+stars:>=${requestData.minStars}`,
     per_page: NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API,
     page: 1,
   });
