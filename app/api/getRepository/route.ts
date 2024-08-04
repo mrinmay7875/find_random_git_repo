@@ -21,9 +21,6 @@ export async function POST(request: Request) {
       page: 1,
     });
     console.log('repos', repos);
-    // if (repos.data.items.length === 0) {
-    //   return NextResponse.json({ error: 'No repos found' }, { status: 500 });
-    // }
     return NextResponse.json(repos.data.items);
   } catch (error) {
     console.error('An error occurred:', error);

@@ -3,7 +3,6 @@ import { Button, Card, Group, Loader, Select } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import { NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API } from '../const/const';
 import { PROGRAMMING_LANGUAGES_LIST } from '../data/programmingLanguagesList';
 import { TOPICS_LIST } from '../data/topicsList';
 import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
@@ -49,9 +48,7 @@ function InputForm() {
     const result = await data.json();
 
     // generate a random number between 0 and 100
-    const randomIndex = Math.floor(
-      Math.random() * NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API
-    );
+    const randomIndex = Math.floor(Math.random() * result.length);
     if (result.length === 0) {
       let tempObject: RepositoryCardProps | null = {
         repoURL: 'html_url',
@@ -97,7 +94,7 @@ function InputForm() {
         isRateLimitingError: true,
         isNoReposFoundError: false,
       };
-      setRepositoryData({ ...tempObject });
+      setRepositoryData(tempObject);
     },
   });
 
