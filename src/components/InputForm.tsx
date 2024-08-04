@@ -14,6 +14,7 @@ type InputFormValues = {
 };
 
 // TODO: Need to add filter by Stars as well
+// TODO: Move the components outside of app folder. Create a src folder outside of app and move the components there.
 
 function InputForm() {
   const [repositoryData, setRepositoryData] =

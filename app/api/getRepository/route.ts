@@ -1,6 +1,5 @@
 import { Octokit } from '@octokit/rest';
 
-// TODO: Make sure to move the PAT into .env file
 const octokit = new Octokit({
   auth: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
 });
@@ -16,6 +15,7 @@ export async function POST(request: Request) {
     per_page: 100,
     page: 1,
   });
+  // TODO: Add error handling here.
   return Response.json(repos.data.items);
 }
 
