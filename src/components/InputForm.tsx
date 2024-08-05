@@ -1,5 +1,14 @@
 'use client';
-import { Button, Card, Divider, Group, Loader, Select } from '@mantine/core';
+import {
+  Button,
+  Card,
+  Center,
+  Divider,
+  Group,
+  Loader,
+  Select,
+  Stack,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -7,7 +16,7 @@ import { PROGRAMMING_LANGUAGES_LIST } from '../data/programmingLanguagesList';
 import { TOPICS_LIST } from '../data/topicsList';
 import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
 import { Repository } from '../types/type';
-import ShortlistedRepoCard from './shortlistedRepoCard';
+import ShortlistedRepoCard from './ShortlistedRepoCard';
 
 type InputFormValues = {
   programmingLanguage: string;
@@ -22,11 +31,10 @@ function InputForm() {
   const [repositoryData, setRepositoryData] =
     useState<RepositoryCardProps | null>(null);
 
-  const [shortlistedRepos, setShortlistedRepos] = useState<Repository[]>(
-    localStorage.getItem('shortlistedRepos')
-      ? JSON.parse(localStorage.getItem('shortlistedRepos') as string)
-      : []
-  );
+  const [shortlistedRepos, setShortlistedRepos] = useState<Repository[]>(() => {
+    const storedRepos = localStorage.getItem('shortlistedRepos');
+    return storedRepos ? JSON.parse(storedRepos) : [];
+  });
 
   function handleStoreShortlistedRepos(singleRepo: Repository) {
     setShortlistedRepos((prevRepos) => {
@@ -187,9 +195,6 @@ function InputForm() {
               <Button type='submit' disabled={mutation.isPending}>
                 {mutation.isPending ? 'Searching...' : 'Submit'}
               </Button>
-              <Button onClick={() => localStorage.clear()}>
-                Clear from LocalStorage
-              </Button>
             </Group>
           </form>
         </Card>
@@ -202,12 +207,23 @@ function InputForm() {
       {repositoryData && <RepositoryCard {...repositoryData} />}
       <Divider my='md' />
       <Group mt='md' justify='center'>
-        {shortlistedRepos.length >= 0 && (
+        {shortlistedRepos.length > 0 && (
           <>
-            <h3>Shortlisted Repos:</h3>
-            {shortlistedRepos.map((repo: Repository, index) => (
-              <ShortlistedRepoCard key={index} {...repo} />
-            ))}
+            <Center>
+              <h3>Shortlisted Repos:</h3>
+            </Center>
+
+            <Center>
+              <Button onClick={() => localStorage.clear()}>
+                Clear from LocalStorage
+              </Button>
+            </Center>
+
+            <Group align='center'>
+              {shortlistedRepos.map((repo: Repository, index) => (
+                <ShortlistedRepoCard key={index} {...repo} />
+              ))}
+            </Group>
           </>
         )}
       </Group>
