@@ -206,27 +206,27 @@ function InputForm() {
       )}
       {repositoryData && <RepositoryCard {...repositoryData} />}
       <Divider my='md' />
-      <Group mt='md' justify='center'>
+      {/* TODO: Make these shortlisted repos content appear in separate lines */}
+      <Stack justify='center'>
         {shortlistedRepos.length > 0 && (
           <>
-            <Center>
+            <Group justify='center'>
               <h3>Shortlisted Repos:</h3>
-            </Center>
-
-            <Center>
+            </Group>
+            <Group justify='center'>
               <Button onClick={() => localStorage.clear()}>
                 Clear from LocalStorage
               </Button>
-            </Center>
+            </Group>
 
-            <Group align='center'>
+            <Group justify='center'>
               {shortlistedRepos.map((repo: Repository, index) => (
                 <ShortlistedRepoCard key={index} {...repo} />
               ))}
             </Group>
           </>
         )}
-      </Group>
+      </Stack>
     </div>
   );
 }
