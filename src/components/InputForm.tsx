@@ -1,11 +1,13 @@
 'use client';
-import { Button, Card, Group, Loader, Select } from '@mantine/core';
+import { Button, Card, Divider, Group, Loader, Select } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { PROGRAMMING_LANGUAGES_LIST } from '../data/programmingLanguagesList';
 import { TOPICS_LIST } from '../data/topicsList';
 import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
+import { Repository } from '../types/type';
+import ShortlistedRepoCard from './shortlistedRepoCard';
 
 type InputFormValues = {
   programmingLanguage: string;
@@ -19,6 +21,20 @@ type InputFormValues = {
 function InputForm() {
   const [repositoryData, setRepositoryData] =
     useState<RepositoryCardProps | null>(null);
+
+  const [shortlistedRepos, setShortlistedRepos] = useState<Repository[]>(
+    localStorage.getItem('shortlistedRepos')
+      ? JSON.parse(localStorage.getItem('shortlistedRepos') as string)
+      : []
+  );
+
+  function handleStoreShortlistedRepos(singleRepo: Repository) {
+    setShortlistedRepos((prevRepos) => {
+      const updatedRepos = [...prevRepos, singleRepo];
+      localStorage.setItem('shortlistedRepos', JSON.stringify(updatedRepos));
+      return updatedRepos;
+    });
+  }
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -58,6 +74,7 @@ function InputForm() {
         topics: ['topics'],
         isRateLimitingError: false,
         isNoReposFoundError: true,
+        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
       };
       setRepositoryData({ ...tempObject });
     } else {
@@ -72,6 +89,7 @@ function InputForm() {
         topics: topics,
         isRateLimitingError: false,
         isNoReposFoundError: false,
+        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
       };
       setRepositoryData({ ...tempObject });
     }
@@ -93,6 +111,7 @@ function InputForm() {
         topics: ['topics'],
         isRateLimitingError: true,
         isNoReposFoundError: false,
+        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
       };
       setRepositoryData(tempObject);
     },
@@ -168,6 +187,9 @@ function InputForm() {
               <Button type='submit' disabled={mutation.isPending}>
                 {mutation.isPending ? 'Searching...' : 'Submit'}
               </Button>
+              <Button onClick={() => localStorage.clear()}>
+                Clear from LocalStorage
+              </Button>
             </Group>
           </form>
         </Card>
@@ -178,6 +200,17 @@ function InputForm() {
         </Group>
       )}
       {repositoryData && <RepositoryCard {...repositoryData} />}
+      <Divider my='md' />
+      <Group mt='md' justify='center'>
+        {shortlistedRepos.length >= 0 && (
+          <>
+            <h3>Shortlisted Repos:</h3>
+            {shortlistedRepos.map((repo: Repository, index) => (
+              <ShortlistedRepoCard key={index} {...repo} />
+            ))}
+          </>
+        )}
+      </Group>
     </div>
   );
 }
