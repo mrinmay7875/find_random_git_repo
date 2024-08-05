@@ -20,7 +20,6 @@ export async function POST(request: Request) {
       per_page: NUMBER_OF_REPOSITORIES_PER_PAGE_FROM_API,
       page: 1,
     });
-    console.log('repos', repos);
     return NextResponse.json(repos.data.items);
   } catch (error) {
     console.error('An error occurred:', error);

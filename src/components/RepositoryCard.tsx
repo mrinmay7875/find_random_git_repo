@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Anchor, Badge, Card, Group, Text, Alert } from '@mantine/core';
+import { Anchor, Badge, Card, Group, Text, Alert, Button } from '@mantine/core';
 
 import { IconInfoCircle } from '@tabler/icons-react';
+import { Repository } from '../types/type';
 
 export type RepositoryCardProps = {
   repoURL: string;
@@ -11,6 +12,7 @@ export type RepositoryCardProps = {
   topics: string[];
   isRateLimitingError: boolean;
   isNoReposFoundError: boolean;
+  handleStoreShortlistedRepos: (repo: Repository) => void;
 };
 
 function RepositoryCard({
@@ -21,6 +23,7 @@ function RepositoryCard({
   topics,
   isRateLimitingError,
   isNoReposFoundError,
+  handleStoreShortlistedRepos,
 }: RepositoryCardProps) {
   const icon = <IconInfoCircle />;
 
@@ -29,6 +32,17 @@ function RepositoryCard({
   // Hides the Error Alert component
   function handleCloseAlert() {
     setIsAlertOpen(false);
+  }
+
+  function addRepositoryToShortlist() {
+    let currentRepository: Repository = {
+      repoURL,
+      name,
+      description,
+      stars,
+      topics,
+    };
+    handleStoreShortlistedRepos(currentRepository);
   }
 
   if (isNoReposFoundError) {
@@ -69,7 +83,7 @@ function RepositoryCard({
   if (!isRateLimitingError && !isAlertOpen) {
     return (
       <div>
-        <Group mt='md' mb={15} justify='center'>
+        <Group mt='md' mb={25} justify='center'>
           <Card
             shadow='sm'
             padding='xl'
@@ -97,6 +111,9 @@ function RepositoryCard({
                 </Badge>
               ))}
             </div>
+            <Group mt='md' justify='center'>
+              <Button onClick={addRepositoryToShortlist}> + Save</Button>
+            </Group>
           </Card>
         </Group>
       </div>
