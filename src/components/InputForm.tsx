@@ -28,6 +28,7 @@ type InputFormValues = {
 // FIXME: [BUG] - Multiple same repos can be added in localstorage.
 // TODO: [Enhancement] - After clicking on clearAll button refresh the screen and display a toast notification.
 // TODO: [Enhancement] - After clicking on + Save button display a toast notification.
+// TODO: [Enhancement] - Hide the divider at first when there are no short listed repos yet.
 
 function InputForm() {
   const [repositoryData, setRepositoryData] =
@@ -201,7 +202,7 @@ function InputForm() {
 
             <Group mt='md' justify='center'>
               <Button type='submit' disabled={mutation.isPending}>
-                {mutation.isPending ? 'Searching...' : 'Submit'}
+                {mutation.isPending ? 'Searching...' : 'Search'}
               </Button>
             </Group>
           </form>
