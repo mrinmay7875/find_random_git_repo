@@ -2,7 +2,6 @@
 import {
   Button,
   Card,
-  Center,
   Divider,
   Group,
   Loader,
@@ -24,8 +23,10 @@ type InputFormValues = {
   stars: string;
 };
 
-// TODO: Need to handle the No repos found case UI.
-// FIXME: Remove the tempObject name and give a better name for that variable.
+// FIXME: Remove the repositoryObject name and give a better name for that variable.
+// TODO: Change the Submit button text into Search button
+// TODO: Implement feature to remove a single repository from the shortlisted list(localstorage)
+// FIXME: See how we can use localStorage for Nextjs since getting error due to this.
 
 function InputForm() {
   const [repositoryData, setRepositoryData] =
@@ -74,7 +75,7 @@ function InputForm() {
     // generate a random number between 0 and 100
     const randomIndex = Math.floor(Math.random() * result.length);
     if (result.length === 0) {
-      let tempObject: RepositoryCardProps | null = {
+      let repositoryObject: RepositoryCardProps | null = {
         repoURL: 'html_url',
         name: 'name',
         description: 'description',
@@ -84,12 +85,12 @@ function InputForm() {
         isNoReposFoundError: true,
         handleStoreShortlistedRepos: handleStoreShortlistedRepos,
       };
-      setRepositoryData({ ...tempObject });
+      setRepositoryData({ ...repositoryObject });
     } else {
       let { description, html_url, name, stargazers_count, topics } =
         result[randomIndex];
 
-      let tempObject: RepositoryCardProps | null = {
+      let repositoryObject: RepositoryCardProps | null = {
         repoURL: html_url,
         name: name,
         description: description,
@@ -99,7 +100,7 @@ function InputForm() {
         isNoReposFoundError: false,
         handleStoreShortlistedRepos: handleStoreShortlistedRepos,
       };
-      setRepositoryData({ ...tempObject });
+      setRepositoryData({ ...repositoryObject });
     }
   }
 
@@ -111,7 +112,7 @@ function InputForm() {
     },
     onError: (error, variables, context) => {
       console.log('error', { error, variables, context });
-      let tempObject: RepositoryCardProps | null = {
+      let repositoryObject: RepositoryCardProps | null = {
         repoURL: 'html_url',
         name: 'name',
         description: 'description',
@@ -121,7 +122,7 @@ function InputForm() {
         isNoReposFoundError: false,
         handleStoreShortlistedRepos: handleStoreShortlistedRepos,
       };
-      setRepositoryData(tempObject);
+      setRepositoryData(repositoryObject);
     },
   });
 
