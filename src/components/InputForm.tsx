@@ -23,27 +23,34 @@ type InputFormValues = {
   stars: string;
 };
 
-// FIXME: Remove the repositoryObject name and give a better name for that variable.
 // TODO: Change the Submit button text into Search button
 // TODO: Implement feature to remove a single repository from the shortlisted list(localstorage)
-// FIXME: See how we can use localStorage for Nextjs since getting error due to this.
+// FIXME: [BUG] - Multiple same repos can be added in localstorage.
+// TODO: [Enhancement] - After clicking on clearAll button refresh the screen and display a toast notification.
+// TODO: [Enhancement] - After clicking on + Save button display a toast notification.
 
 function InputForm() {
   const [repositoryData, setRepositoryData] =
     useState<RepositoryCardProps | null>(null);
 
   const [shortlistedRepos, setShortlistedRepos] = useState<Repository[]>(() => {
-    const storedRepos = localStorage.getItem('shortlistedRepos');
+    const storedRepos =
+      typeof window !== 'undefined'
+        ? localStorage.getItem('shortlistedRepos')
+        : null;
+
     return storedRepos ? JSON.parse(storedRepos) : [];
   });
 
-  function handleStoreShortlistedRepos(singleRepo: Repository) {
+  const handleStoreShortlistedRepos = (singleRepo: Repository) =>
     setShortlistedRepos((prevRepos) => {
       const updatedRepos = [...prevRepos, singleRepo];
-      localStorage.setItem('shortlistedRepos', JSON.stringify(updatedRepos));
+      // Check if window is available then only try to use localStorage otherwise it gives error as "localStorage is not defined"
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('shortlistedRepos', JSON.stringify(updatedRepos));
+      }
       return updatedRepos;
     });
-  }
 
   const form = useForm({
     mode: 'uncontrolled',
