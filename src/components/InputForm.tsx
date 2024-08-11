@@ -5,6 +5,7 @@ import {
   Divider,
   Group,
   Loader,
+  rem,
   Select,
   Stack,
 } from '@mantine/core';
@@ -23,8 +24,6 @@ type InputFormValues = {
   stars: string;
 };
 
-// TODO: Change the Submit button text into Search button
-// TODO: Implement feature to remove a single repository from the shortlisted list(localstorage)
 // FIXME: [BUG] - Fix FavIcon not found error.
 // TODO: [Enhancement] - After clicking on clearAll button refresh the screen and display a toast notification.
 // TODO: [Enhancement] - After clicking on + Save button display a toast notification.
@@ -59,15 +58,6 @@ function InputForm() {
       return updatedRepos;
     });
 
-  // Removes a single repo from localStorage
-  // function removeASingleRepoFromLocalStorage(repoURL: string) {
-  //   setShortlistedRepos((prevRepos) => {
-  //     const updatedRepos = prevRepos.filter((repo) => repo.repoURL !== repoURL);
-  //     localStorage.setItem('shortlistedRepos', JSON.stringify(updatedRepos));
-  //     return updatedRepos;
-  //   });
-  // }
-
   function removeASingleRepoFromLocalStorage(repoURL: string) {
     if (
       window.confirm(
@@ -81,6 +71,17 @@ function InputForm() {
         localStorage.setItem('shortlistedRepos', JSON.stringify(updatedRepos));
         return updatedRepos;
       });
+    }
+  }
+
+  function removeAllShortlistedRepos() {
+    if (
+      window.confirm(
+        `Are you sure you want to remove all repos from shortlisted repos?`
+      )
+    ) {
+      setShortlistedRepos([]);
+      localStorage.removeItem('shortlistedRepos');
     }
   }
 
@@ -246,7 +247,7 @@ function InputForm() {
         </Group>
       )}
       {repositoryData && <RepositoryCard {...repositoryData} />}
-      <Divider my='md' />
+      {shortlistedRepos.length > 0 && <Divider my='md' />}
       {/* TODO: Make these shortlisted repos content appear in separate lines */}
       <Stack justify='center'>
         {shortlistedRepos.length > 0 && (
@@ -255,7 +256,7 @@ function InputForm() {
               <h3>Shortlisted Repos:</h3>
             </Group>
             <Group justify='center'>
-              <Button onClick={() => localStorage.clear()}>
+              <Button onClick={() => removeAllShortlistedRepos()}>
                 Clear from LocalStorage
               </Button>
             </Group>
