@@ -34,6 +34,7 @@ function RepositoryCard({
     setIsAlertOpen(false);
   }
 
+  // Adds a repo to shortList repos
   function addRepositoryToShortlist() {
     let currentRepository: Repository = {
       repoURL,
@@ -42,6 +43,25 @@ function RepositoryCard({
       stars,
       topics,
     };
+
+    const storedRepos =
+      typeof window !== 'undefined'
+        ? localStorage.getItem('shortlistedRepos')
+        : null;
+
+    let storedReposArray: Repository[] = storedRepos
+      ? JSON.parse(storedRepos)
+      : [];
+
+    // Check if repo is already added
+    let foundRepo = storedReposArray.find((repo) => repo.repoURL === repoURL);
+
+    // If repo is already added then no need to add it again
+    if (foundRepo) {
+      return;
+    }
+
+    // Otherwise add the repo to LocalStorage
     handleStoreShortlistedRepos(currentRepository);
   }
 
