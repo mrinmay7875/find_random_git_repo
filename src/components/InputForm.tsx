@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PROGRAMMING_LANGUAGES_LIST } from '../data/programmingLanguagesList';
 import { TOPICS_LIST } from '../data/topicsList';
 import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
@@ -25,7 +25,7 @@ type InputFormValues = {
 
 // TODO: Change the Submit button text into Search button
 // TODO: Implement feature to remove a single repository from the shortlisted list(localstorage)
-// FIXME: [BUG] - Multiple same repos can be added in localstorage.
+// FIXME: [BUG] - Fix FavIcon not found error.
 // TODO: [Enhancement] - After clicking on clearAll button refresh the screen and display a toast notification.
 // TODO: [Enhancement] - After clicking on + Save button display a toast notification.
 // TODO: [Enhancement] - Hide the divider at first when there are no short listed repos yet.
@@ -34,14 +34,18 @@ function InputForm() {
   const [repositoryData, setRepositoryData] =
     useState<RepositoryCardProps | null>(null);
 
-  const [shortlistedRepos, setShortlistedRepos] = useState<Repository[]>(() => {
+  const [shortlistedRepos, setShortlistedRepos] = useState<Repository[]>([]);
+
+  useEffect(() => {
     const storedRepos =
       typeof window !== 'undefined'
         ? localStorage.getItem('shortlistedRepos')
         : null;
 
-    return storedRepos ? JSON.parse(storedRepos) : [];
-  });
+    if (storedRepos) {
+      setShortlistedRepos(JSON.parse(storedRepos));
+    }
+  }, []);
 
   const handleStoreShortlistedRepos = (singleRepo: Repository) =>
     setShortlistedRepos((prevRepos) => {
