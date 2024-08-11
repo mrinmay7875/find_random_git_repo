@@ -36,6 +36,7 @@ function InputForm() {
 
   const [shortlistedRepos, setShortlistedRepos] = useState<Repository[]>([]);
 
+  // We need to put the code that runs on browser in useEffect otherwise we get Next.js hydration error.
   useEffect(() => {
     const storedRepos =
       typeof window !== 'undefined'
@@ -47,6 +48,7 @@ function InputForm() {
     }
   }, []);
 
+  // Gets called when user clicks on + Save button
   const handleStoreShortlistedRepos = (singleRepo: Repository) =>
     setShortlistedRepos((prevRepos) => {
       const updatedRepos = [...prevRepos, singleRepo];
@@ -57,6 +59,32 @@ function InputForm() {
       return updatedRepos;
     });
 
+  // Removes a single repo from localStorage
+  // function removeASingleRepoFromLocalStorage(repoURL: string) {
+  //   setShortlistedRepos((prevRepos) => {
+  //     const updatedRepos = prevRepos.filter((repo) => repo.repoURL !== repoURL);
+  //     localStorage.setItem('shortlistedRepos', JSON.stringify(updatedRepos));
+  //     return updatedRepos;
+  //   });
+  // }
+
+  function removeASingleRepoFromLocalStorage(repoURL: string) {
+    if (
+      window.confirm(
+        `Are you sure you want to remove this repo from shortlisted repos?`
+      )
+    ) {
+      setShortlistedRepos((prevRepos) => {
+        const updatedRepos = prevRepos.filter(
+          (repo) => repo.repoURL !== repoURL
+        );
+        localStorage.setItem('shortlistedRepos', JSON.stringify(updatedRepos));
+        return updatedRepos;
+      });
+    }
+  }
+
+  // Structure for the Search Form
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -234,7 +262,17 @@ function InputForm() {
 
             <Group justify='center'>
               {shortlistedRepos.map((repo: Repository, index) => (
-                <ShortlistedRepoCard key={index} {...repo} />
+                <ShortlistedRepoCard
+                  repoURL={repo.repoURL}
+                  name={repo.name}
+                  description={repo.description}
+                  stars={repo.stars}
+                  topics={repo.topics}
+                  key={index}
+                  removeASingleRepoFromLocalStorage={
+                    removeASingleRepoFromLocalStorage
+                  }
+                />
               ))}
             </Group>
           </>

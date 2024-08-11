@@ -1,6 +1,15 @@
 import { Group, Card, Anchor, Badge, Button, Text } from '@mantine/core';
 import React from 'react';
-import { Repository } from '../types/type';
+import { IconTrashFilled } from '@tabler/icons-react';
+
+type ShortlistedRepoCardProps = {
+  repoURL: string;
+  name: string;
+  description: string;
+  stars: number;
+  topics: string[];
+  removeASingleRepoFromLocalStorage: (repoURL: string) => void;
+};
 
 function ShortlistedRepoCard({
   repoURL,
@@ -8,7 +17,8 @@ function ShortlistedRepoCard({
   description,
   stars,
   topics,
-}: Repository) {
+  removeASingleRepoFromLocalStorage,
+}: ShortlistedRepoCardProps) {
   return (
     <div>
       <Group mt='md' mb={25} justify='center'>
@@ -39,6 +49,16 @@ function ShortlistedRepoCard({
               </Badge>
             ))}
           </div>
+          <Group mt='md' justify='center'>
+            <Button
+              variant='outline'
+              leftSection={<IconTrashFilled size={16} />}
+              color='red'
+              onClick={() => removeASingleRepoFromLocalStorage(repoURL)}
+            >
+              Delete
+            </Button>
+          </Group>
         </Card>
       </Group>
     </div>
