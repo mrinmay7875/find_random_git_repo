@@ -14,7 +14,8 @@ export default function RootLayout({ children }: { children: any }) {
     <html lang='en'>
       <head>
         <ColorSchemeScript />
-        {/* <link rel='shortcut icon' href='/favicon.svg' /> */}
+        {/* In order for Favicon to work make sure to rename it to icon.ico and put inside app folder */}
+        <link rel='shortcut icon' href='./icon.ico' />
         <meta
           name='viewport'
           content='minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no'
