@@ -24,8 +24,6 @@ type InputFormValues = {
   stars: string;
 };
 
-// FIXME: [BUG] - Fix FavIcon not found error.
-// TODO: [Enhancement] - After clicking on clearAll button refresh the screen and display a toast notification.
 // TODO: [Enhancement] - After clicking on + Save button display a toast notification.
 // TODO: [Enhancement] - Instead of window.confirm let's use Modal component from Mantine.
 
