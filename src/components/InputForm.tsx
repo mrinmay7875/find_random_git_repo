@@ -28,6 +28,7 @@ type InputFormValues = {
 // TODO: [Enhancement] - After clicking on clearAll button refresh the screen and display a toast notification.
 // TODO: [Enhancement] - After clicking on + Save button display a toast notification.
 // TODO: [Enhancement] - Hide the divider at first when there are no short listed repos yet.
+// TODO: [Enhancement] - Instead of window.confirm let's use Modal component from Mantine.
 
 function InputForm() {
   const [repositoryData, setRepositoryData] =

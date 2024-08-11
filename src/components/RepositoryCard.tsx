@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Anchor, Badge, Card, Group, Text, Alert, Button } from '@mantine/core';
 
-import { IconInfoCircle } from '@tabler/icons-react';
+import { IconInfoCircle, IconPlus } from '@tabler/icons-react';
 import { Repository } from '../types/type';
 
 export type RepositoryCardProps = {
@@ -132,7 +132,12 @@ function RepositoryCard({
               ))}
             </div>
             <Group mt='md' justify='center'>
-              <Button onClick={addRepositoryToShortlist}> + Save</Button>
+              <Button
+                leftSection={<IconPlus size={20} />}
+                onClick={addRepositoryToShortlist}
+              >
+                Save
+              </Button>
             </Group>
           </Card>
         </Group>
