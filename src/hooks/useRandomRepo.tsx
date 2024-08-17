@@ -46,8 +46,6 @@ export const useRandomRepos = (inputFormValues: InputFormValues) => {
   }, [repoIndex, repos, refetch]);
 
   const getNextRepo = (): Repository | null => {
-    // console.log({ isError, error });
-
     // If there are no repos, return repos as null
     if (!repos) return null;
 
@@ -61,7 +59,6 @@ export const useRandomRepos = (inputFormValues: InputFormValues) => {
     } else {
       setRepoIndex((prevIndex) => prevIndex + 1);
     }
-    console.log('inside getNextRepo', repo);
 
     if (repo) {
       const { html_url, full_name, description, stargazers_count, topics } =
