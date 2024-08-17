@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { InputFormValues } from '../components/InputForm';
+import { Repository } from '../types/type';
 
 async function fetchRepos(value: InputFormValues): Promise<any> {
   const response = await fetch('api/getRepository', {
@@ -25,7 +26,11 @@ async function fetchRepos(value: InputFormValues): Promise<any> {
 export const useRandomRepos = (inputFormValues: InputFormValues) => {
   const [repoIndex, setRepoIndex] = useState(0);
 
-  const { data: repos, refetch } = useQuery({
+  const {
+    data: repos,
+    refetch,
+    isFetching,
+  } = useQuery({
     queryKey: ['repos', inputFormValues],
     queryFn: () => fetchRepos(inputFormValues),
   });
@@ -37,7 +42,8 @@ export const useRandomRepos = (inputFormValues: InputFormValues) => {
     }
   }, [repoIndex, repos, refetch]);
 
-  const getNextRepo = () => {
+  const getNextRepo = (): Repository | null => {
+    // If there are no repos, return repos as null
     if (!repos) return null;
 
     // Get the current repo
@@ -54,5 +60,5 @@ export const useRandomRepos = (inputFormValues: InputFormValues) => {
     return repo;
   };
 
-  return { getNextRepo, repos };
+  return { getNextRepo, repos, isFetching };
 };

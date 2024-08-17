@@ -9,7 +9,6 @@ import {
   Stack,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { PROGRAMMING_LANGUAGES_LIST } from '../data/programmingLanguagesList';
 import { TOPICS_LIST } from '../data/topicsList';
@@ -17,7 +16,6 @@ import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
 import { Repository } from '../types/type';
 import ShortlistedRepoCard from './ShortlistedRepoCard';
 
-import { useRandomQuotes } from '../hooks/useRandomQuotes';
 import { useRandomRepos } from '../hooks/useRandomRepo';
 
 export type InputFormValues = {
@@ -103,16 +101,16 @@ function InputForm() {
   });
 
   const formDataValues = form.getValues();
-  console.log('sampleData', formDataValues);
 
-  const { getNextRepo, repos } = useRandomRepos({
+  // Consume useRandomRepos hook
+  const { getNextRepo, isFetching } = useRandomRepos({
     topics: formDataValues.topics || '',
     programmingLanguage: formDataValues.programmingLanguage || '',
     stars: formDataValues.stars || '0',
   });
 
   const handleClickRandomRepos = () => {
-    const nextRepo: Repository = getNextRepo();
+    const nextRepo: Repository | null = getNextRepo();
     if (nextRepo) {
       setRepositoryData({
         ...nextRepo,
@@ -182,10 +180,9 @@ function InputForm() {
             />
 
             <Group mt='md' justify='center'>
-              {/* <Button type='submit' disabled={mutation.isPending}>
-                {mutation.isPending ? 'Searching...' : 'Search'}
-              </Button> */}
-              <Button type='submit'>Search</Button>
+              <Button type='submit' disabled={isFetching}>
+                {isFetching ? 'Searching...' : 'Search'}
+              </Button>
             </Group>
           </form>
         </Card>
