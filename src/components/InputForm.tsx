@@ -169,34 +169,29 @@ function InputForm() {
   // });
 
   // Runs when input form is submitted
-  function handleFormSubmit(value: InputFormValues) {
-    setRepositoryData(null);
-  }
+  // function handleFormSubmit(value: InputFormValues) {
+  //   setRepositoryData(null);
+  // }
 
-  const [currentRepo, setCurrentRepo] = useState<RepositoryCardProps | null>(
-    null
-  );
-
-  const sampleData = form.getValues();
-  console.log('sampleData', sampleData);
+  const formDataValues = form.getValues();
+  console.log('sampleData', formDataValues);
 
   const { getNextRepo, repos } = useRandomRepos({
-    topics: sampleData.topics || '',
-    programmingLanguage: sampleData.programmingLanguage || '',
-    stars: sampleData.stars || '0',
+    topics: formDataValues.topics || '',
+    programmingLanguage: formDataValues.programmingLanguage || '',
+    stars: formDataValues.stars || '0',
   });
 
   const handleClickRandomRepos = () => {
     const nextRepo: Repository = getNextRepo();
     if (nextRepo) {
-      setCurrentRepo({
+      setRepositoryData({
         ...nextRepo,
         isRateLimitingError: false,
         isNoReposFoundError: false,
         handleStoreShortlistedRepos: handleStoreShortlistedRepos,
       });
     }
-    console.log('nextRepo', nextRepo);
   };
 
   return (
@@ -209,7 +204,7 @@ function InputForm() {
           withBorder
           style={{ width: 500 }}
         >
-          <form onSubmit={form.onSubmit(handleFormSubmit)}>
+          <form onSubmit={form.onSubmit(handleClickRandomRepos)}>
             <Select
               required
               label='Programming Language'
@@ -261,20 +256,12 @@ function InputForm() {
               {/* <Button type='submit' disabled={mutation.isPending}>
                 {mutation.isPending ? 'Searching...' : 'Search'}
               </Button> */}
+              <Button type='submit'>Search</Button>
             </Group>
           </form>
         </Card>
       </Group>
-      <Group>
-        <h2>Results: Testing</h2>
-        <button onClick={handleClickRandomRepos}>Click me</button>
-        {currentRepo && <p>{currentRepo.name}</p>}
-      </Group>
-      {/* {mutation.isPending && (
-        <Group mt='md' justify='center'>
-          <Loader size={50} />
-        </Group>
-      )} */}
+
       {repositoryData && <RepositoryCard {...repositoryData} />}
       {shortlistedRepos.length > 0 && <Divider my='md' />}
       {/* TODO: Make these shortlisted repos content appear in separate lines */}
