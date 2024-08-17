@@ -61,9 +61,21 @@ export const useRandomRepos = (inputFormValues: InputFormValues) => {
     } else {
       setRepoIndex((prevIndex) => prevIndex + 1);
     }
-    // console.log({});
+    console.log('inside getNextRepo', repo);
 
-    return repo;
+    if (repo) {
+      const { html_url, full_name, description, stargazers_count, topics } =
+        repo;
+      const repository: Repository = {
+        repoURL: html_url,
+        name: full_name,
+        description,
+        stars: stargazers_count,
+        topics,
+      };
+      return repository;
+    }
+    return null;
   };
 
   return { getNextRepo, repos, isFetching, isError, error, isLoading };
