@@ -5,7 +5,6 @@ import {
   Divider,
   Group,
   Loader,
-  rem,
   Select,
   Stack,
 } from '@mantine/core';
@@ -18,7 +17,10 @@ import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
 import { Repository } from '../types/type';
 import ShortlistedRepoCard from './ShortlistedRepoCard';
 
-type InputFormValues = {
+import { useRandomQuotes } from '../hooks/useRandomQuotes';
+import { useRandomRepos } from '../hooks/useRandomRepo';
+
+export type InputFormValues = {
   programmingLanguage: string;
   topics: string;
   stars: string;
@@ -101,78 +103,101 @@ function InputForm() {
   });
 
   // Function that makes a API call to return random github repo and return a promise
-  async function fetchRepos(value: InputFormValues): Promise<any> {
-    const data = await fetch('api/getRepository', {
-      method: 'POST',
-      body: JSON.stringify({
-        programmingLanguage: value.programmingLanguage,
-        topics: value.topics,
-        minStars: parseInt(value.stars),
-      }),
-    });
-    const result = await data.json();
+  // async function fetchRepos(value: InputFormValues): Promise<any> {
+  //   const data = await fetch('api/getRepository', {
+  //     method: 'POST',
+  //     body: JSON.stringify({
+  //       programmingLanguage: value.programmingLanguage,
+  //       topics: value.topics,
+  //       minStars: parseInt(value.stars),
+  //     }),
+  //   });
+  //   const result = await data.json();
 
-    // generate a random number between 0 and 100
-    const randomIndex = Math.floor(Math.random() * result.length);
-    if (result.length === 0) {
-      let repositoryObject: RepositoryCardProps | null = {
-        repoURL: 'html_url',
-        name: 'name',
-        description: 'description',
-        stars: 0,
-        topics: ['topics'],
-        isRateLimitingError: false,
-        isNoReposFoundError: true,
-        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
-      };
-      setRepositoryData({ ...repositoryObject });
-    } else {
-      let { description, html_url, name, stargazers_count, topics } =
-        result[randomIndex];
+  //   // generate a random number between 0 and 100
+  //   const randomIndex = Math.floor(Math.random() * result.length);
+  //   if (result.length === 0) {
+  //     let repositoryObject: RepositoryCardProps | null = {
+  //       repoURL: 'html_url',
+  //       name: 'name',
+  //       description: 'description',
+  //       stars: 0,
+  //       topics: ['topics'],
+  //       isRateLimitingError: false,
+  //       isNoReposFoundError: true,
+  //       handleStoreShortlistedRepos: handleStoreShortlistedRepos,
+  //     };
+  //     setRepositoryData({ ...repositoryObject });
+  //   } else {
+  //     let { description, html_url, name, stargazers_count, topics } =
+  //       result[randomIndex];
 
-      let repositoryObject: RepositoryCardProps | null = {
-        repoURL: html_url,
-        name: name,
-        description: description,
-        stars: stargazers_count,
-        topics: topics,
-        isRateLimitingError: false,
-        isNoReposFoundError: false,
-        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
-      };
-      setRepositoryData({ ...repositoryObject });
-    }
-  }
+  //     let repositoryObject: RepositoryCardProps | null = {
+  //       repoURL: html_url,
+  //       name: name,
+  //       description: description,
+  //       stars: stargazers_count,
+  //       topics: topics,
+  //       isRateLimitingError: false,
+  //       isNoReposFoundError: false,
+  //       handleStoreShortlistedRepos: handleStoreShortlistedRepos,
+  //     };
+  //     setRepositoryData({ ...repositoryObject });
+  //   }
+  // }
 
   // We will use this mutation when input form is submitted
-  const mutation = useMutation({
-    mutationFn: fetchRepos,
-    onSuccess: (data: any) => {
-      console.log('Success:', data);
-    },
-    onError: (error, variables, context) => {
-      console.log('error', { error, variables, context });
-      let repositoryObject: RepositoryCardProps | null = {
-        repoURL: 'html_url',
-        name: 'name',
-        description: 'description',
-        stars: 0,
-        topics: ['topics'],
-        isRateLimitingError: true,
-        isNoReposFoundError: false,
-        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
-      };
-      setRepositoryData(repositoryObject);
-    },
-  });
+  // const mutation = useMutation({
+  //   mutationFn: fetchRepos,
+  //   onSuccess: (data: any) => {
+  //     console.log('Success:', data);
+  //   },
+  //   onError: (error, variables, context) => {
+  //     console.log('error', { error, variables, context });
+  //     let repositoryObject: RepositoryCardProps | null = {
+  //       repoURL: 'html_url',
+  //       name: 'name',
+  //       description: 'description',
+  //       stars: 0,
+  //       topics: ['topics'],
+  //       isRateLimitingError: true,
+  //       isNoReposFoundError: false,
+  //       handleStoreShortlistedRepos: handleStoreShortlistedRepos,
+  //     };
+  //     setRepositoryData(repositoryObject);
+  //   },
+  // });
 
   // Runs when input form is submitted
   function handleFormSubmit(value: InputFormValues) {
     setRepositoryData(null);
-    mutation.mutate(value);
   }
-  // console.log('mutation.data', mutation.data);
-  // console.log('mutation.isPending', mutation.isPending);
+
+  const [currentRepo, setCurrentRepo] = useState<RepositoryCardProps | null>(
+    null
+  );
+
+  const sampleData = form.getValues();
+  console.log('sampleData', sampleData);
+
+  const { getNextRepo, repos } = useRandomRepos({
+    topics: sampleData.topics || '',
+    programmingLanguage: sampleData.programmingLanguage || '',
+    stars: sampleData.stars || '0',
+  });
+
+  const handleClickRandomRepos = () => {
+    const nextRepo: Repository = getNextRepo();
+    if (nextRepo) {
+      setCurrentRepo({
+        ...nextRepo,
+        isRateLimitingError: false,
+        isNoReposFoundError: false,
+        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
+      });
+    }
+    console.log('nextRepo', nextRepo);
+  };
 
   return (
     <div>
@@ -233,18 +258,23 @@ function InputForm() {
             />
 
             <Group mt='md' justify='center'>
-              <Button type='submit' disabled={mutation.isPending}>
+              {/* <Button type='submit' disabled={mutation.isPending}>
                 {mutation.isPending ? 'Searching...' : 'Search'}
-              </Button>
+              </Button> */}
             </Group>
           </form>
         </Card>
       </Group>
-      {mutation.isPending && (
+      <Group>
+        <h2>Results: Testing</h2>
+        <button onClick={handleClickRandomRepos}>Click me</button>
+        {currentRepo && <p>{currentRepo.name}</p>}
+      </Group>
+      {/* {mutation.isPending && (
         <Group mt='md' justify='center'>
           <Loader size={50} />
         </Group>
-      )}
+      )} */}
       {repositoryData && <RepositoryCard {...repositoryData} />}
       {shortlistedRepos.length > 0 && <Divider my='md' />}
       {/* TODO: Make these shortlisted repos content appear in separate lines */}
