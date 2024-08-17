@@ -17,7 +17,7 @@ async function fetchRepos(value: InputFormValues): Promise<any> {
   });
 
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
   }
 
   return response.json();
@@ -30,8 +30,11 @@ export const useRandomRepos = (inputFormValues: InputFormValues) => {
     data: repos,
     refetch,
     isFetching,
+    isError,
+    error,
+    isLoading,
   } = useQuery({
-    queryKey: ['repos', inputFormValues],
+    queryKey: ['randomrepos', inputFormValues],
     queryFn: () => fetchRepos(inputFormValues),
   });
 
@@ -43,6 +46,8 @@ export const useRandomRepos = (inputFormValues: InputFormValues) => {
   }, [repoIndex, repos, refetch]);
 
   const getNextRepo = (): Repository | null => {
+    // console.log({ isError, error });
+
     // If there are no repos, return repos as null
     if (!repos) return null;
 
@@ -56,9 +61,10 @@ export const useRandomRepos = (inputFormValues: InputFormValues) => {
     } else {
       setRepoIndex((prevIndex) => prevIndex + 1);
     }
+    // console.log({});
 
     return repo;
   };
 
-  return { getNextRepo, repos, isFetching };
+  return { getNextRepo, repos, isFetching, isError, error, isLoading };
 };

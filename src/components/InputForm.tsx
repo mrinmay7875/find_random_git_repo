@@ -103,15 +103,45 @@ function InputForm() {
   const formDataValues = form.getValues();
 
   // Consume useRandomRepos hook
-  const { getNextRepo, isFetching } = useRandomRepos({
-    topics: formDataValues.topics || '',
-    programmingLanguage: formDataValues.programmingLanguage || '',
-    stars: formDataValues.stars || '0',
-  });
+  const { getNextRepo, isFetching, isError, error, isLoading } = useRandomRepos(
+    {
+      topics: formDataValues.topics || '',
+      programmingLanguage: formDataValues.programmingLanguage || '',
+      stars: formDataValues.stars || '0',
+    }
+  );
 
   const handleClickRandomRepos = () => {
     const nextRepo: Repository | null = getNextRepo();
-    if (nextRepo) {
+    // console.log(isError, error, isLoading);
+    console.log('inside handleClickRandomRepos', { isError, error });
+
+    // Handle Rate Limiting Error
+    if (isError) {
+      setRepositoryData({
+        repoURL: '',
+        name: '',
+        description: '',
+        stars: 0,
+        topics: [],
+        isRateLimitingError: true,
+        isNoReposFoundError: false,
+        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
+      });
+    }
+    // Handle no repos found error
+    else if (!nextRepo) {
+      setRepositoryData({
+        repoURL: '',
+        name: '',
+        description: '',
+        stars: 0,
+        topics: [],
+        isRateLimitingError: false,
+        isNoReposFoundError: true,
+        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
+      });
+    } else {
       setRepositoryData({
         ...nextRepo,
         isRateLimitingError: false,
@@ -163,6 +193,8 @@ function InputForm() {
               key={form.key('stars')}
               clearable
               data={[
+                { value: '10', label: 'Min 10 stars' },
+                { value: '50', label: 'Min 50 stars' },
                 { value: '100', label: 'Min 100 stars' },
                 {
                   value: '500',
