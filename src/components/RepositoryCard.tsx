@@ -115,14 +115,16 @@ function RepositoryCard({
               {name}
             </Anchor>
             <Text mt='xs' c='dimmed' size='sm' component='div'>
-              <strong>Description:</strong>
+              <strong>Description: </strong>
               {description}
             </Text>
             <Text mt='xs' size='sm' component='div'>
-              <strong>⭐️ Stars:</strong>
-              <Text c='dimmed' size='lg' component='div'>
-                {stars}
-              </Text>
+              <strong>
+                ⭐️ Stars:{' '}
+                <Text c='dimmed' size='lg' component='span'>
+                  {stars}
+                </Text>
+              </strong>
             </Text>
             <div>
               {topics.map((topic, index) => (

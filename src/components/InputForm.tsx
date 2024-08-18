@@ -5,12 +5,10 @@ import {
   Divider,
   Group,
   Loader,
-  rem,
   Select,
   Stack,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { PROGRAMMING_LANGUAGES_LIST } from '../data/programmingLanguagesList';
 import { TOPICS_LIST } from '../data/topicsList';
@@ -18,7 +16,9 @@ import RepositoryCard, { RepositoryCardProps } from './RepositoryCard';
 import { Repository } from '../types/type';
 import ShortlistedRepoCard from './ShortlistedRepoCard';
 
-type InputFormValues = {
+import { useRandomRepos } from '../hooks/useRandomRepo';
+
+export type InputFormValues = {
   programmingLanguage: string;
   topics: string;
   stars: string;
@@ -100,79 +100,56 @@ function InputForm() {
     },
   });
 
-  // Function that makes a API call to return random github repo and return a promise
-  async function fetchRepos(value: InputFormValues): Promise<any> {
-    const data = await fetch('api/getRepository', {
-      method: 'POST',
-      body: JSON.stringify({
-        programmingLanguage: value.programmingLanguage,
-        topics: value.topics,
-        minStars: parseInt(value.stars),
-      }),
-    });
-    const result = await data.json();
+  const formDataValues = form.getValues();
 
-    // generate a random number between 0 and 100
-    const randomIndex = Math.floor(Math.random() * result.length);
-    if (result.length === 0) {
-      let repositoryObject: RepositoryCardProps | null = {
-        repoURL: 'html_url',
-        name: 'name',
-        description: 'description',
-        stars: 0,
-        topics: ['topics'],
-        isRateLimitingError: false,
-        isNoReposFoundError: true,
-        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
-      };
-      setRepositoryData({ ...repositoryObject });
-    } else {
-      let { description, html_url, name, stargazers_count, topics } =
-        result[randomIndex];
-
-      let repositoryObject: RepositoryCardProps | null = {
-        repoURL: html_url,
-        name: name,
-        description: description,
-        stars: stargazers_count,
-        topics: topics,
-        isRateLimitingError: false,
-        isNoReposFoundError: false,
-        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
-      };
-      setRepositoryData({ ...repositoryObject });
+  // Consume useRandomRepos hook
+  const { getNextRepo, isFetching, isError, error, isLoading } = useRandomRepos(
+    {
+      topics: formDataValues.topics || '',
+      programmingLanguage: formDataValues.programmingLanguage || '',
+      stars: formDataValues.stars || '0',
     }
-  }
+  );
 
-  // We will use this mutation when input form is submitted
-  const mutation = useMutation({
-    mutationFn: fetchRepos,
-    onSuccess: (data: any) => {
-      console.log('Success:', data);
-    },
-    onError: (error, variables, context) => {
-      console.log('error', { error, variables, context });
-      let repositoryObject: RepositoryCardProps | null = {
-        repoURL: 'html_url',
-        name: 'name',
-        description: 'description',
+  const handleClickRandomRepos = () => {
+    const nextRepo: Repository | null = getNextRepo();
+    // console.log(isError, error, isLoading);
+    console.log('inside handleClickRandomRepos', { isError, error });
+
+    // Handle Rate Limiting Error
+    if (isError) {
+      setRepositoryData({
+        repoURL: '',
+        name: '',
+        description: '',
         stars: 0,
-        topics: ['topics'],
+        topics: [],
         isRateLimitingError: true,
         isNoReposFoundError: false,
         handleStoreShortlistedRepos: handleStoreShortlistedRepos,
-      };
-      setRepositoryData(repositoryObject);
-    },
-  });
-
-  // Runs when input form is submitted
-  function handleFormSubmit(value: InputFormValues) {
-    setRepositoryData(null);
-    mutation.mutate(value);
-  }
-  // console.log('mutation.data', mutation.data);
-  // console.log('mutation.isPending', mutation.isPending);
+      });
+    }
+    // Handle no repos found error
+    else if (!nextRepo) {
+      setRepositoryData({
+        repoURL: '',
+        name: '',
+        description: '',
+        stars: 0,
+        topics: [],
+        isRateLimitingError: false,
+        isNoReposFoundError: true,
+        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
+      });
+    } else {
+      setRepositoryData({
+        ...nextRepo,
+        isRateLimitingError: false,
+        isNoReposFoundError: false,
+        handleStoreShortlistedRepos: handleStoreShortlistedRepos,
+      });
+    }
+  };
 
   return (
     <div>
@@ -184,7 +161,7 @@ function InputForm() {
           withBorder
           style={{ width: 500 }}
         >
-          <form onSubmit={form.onSubmit(handleFormSubmit)}>
+          <form onSubmit={form.onSubmit(handleClickRandomRepos)}>
             <Select
               required
               label='Programming Language'
@@ -216,6 +193,8 @@ function InputForm() {
               key={form.key('stars')}
               clearable
               data={[
+                { value: '10', label: 'Min 10 stars' },
+                { value: '50', label: 'Min 50 stars' },
                 { value: '100', label: 'Min 100 stars' },
                 {
                   value: '500',
@@ -233,18 +212,14 @@ function InputForm() {
             />
 
             <Group mt='md' justify='center'>
-              <Button type='submit' disabled={mutation.isPending}>
-                {mutation.isPending ? 'Searching...' : 'Search'}
+              <Button type='submit' disabled={isFetching}>
+                {isFetching ? 'Searching...' : 'Search'}
               </Button>
             </Group>
           </form>
         </Card>
       </Group>
-      {mutation.isPending && (
-        <Group mt='md' justify='center'>
-          <Loader size={50} />
-        </Group>
-      )}
+
       {repositoryData && <RepositoryCard {...repositoryData} />}
       {shortlistedRepos.length > 0 && <Divider my='md' />}
       {/* TODO: Make these shortlisted repos content appear in separate lines */}
